@@ -40,7 +40,7 @@ window.addEventListener("scroll", () => {
 })
 
 // Enhanced typing effect for hero subtitle
-function typeWriter(element, texts, speed = 200, deleteSpeed = 200, pauseTime = 1500) {
+function typeWriter(element, texts, speed = 100, deleteSpeed = 50, pauseTime = 2000) {
   let textIndex = 0
   let charIndex = 0
   let isDeleting = false
@@ -52,13 +52,11 @@ function typeWriter(element, texts, speed = 200, deleteSpeed = 200, pauseTime = 
       element.textContent = currentText.substring(0, charIndex - 1)
       charIndex--
 
-      // When completely deleted, pause before next text
       if (charIndex === 0) {
         isDeleting = false
         textIndex = (textIndex + 1) % texts.length
-        // Keep the space occupied with just the cursor during pause
         element.innerHTML = "&nbsp;"
-        setTimeout(type, 500) // Pause when empty
+        setTimeout(type, 800)
         return
       }
     } else {
@@ -67,7 +65,7 @@ function typeWriter(element, texts, speed = 200, deleteSpeed = 200, pauseTime = 
 
       if (charIndex === currentText.length) {
         isDeleting = true
-        setTimeout(type, pauseTime) // Pause when complete
+        setTimeout(type, pauseTime)
         return
       }
     }
@@ -79,7 +77,7 @@ function typeWriter(element, texts, speed = 200, deleteSpeed = 200, pauseTime = 
   type()
 }
 
-// Initialize typing effect with better timing
+// Initialize typing effect
 const typingElement = document.querySelector(".typing-text")
 const typingTexts = [
   "Software Developer",
@@ -90,110 +88,131 @@ const typingTexts = [
 ]
 
 if (typingElement) {
-  // Clear any existing text first
   typingElement.textContent = ""
-  // Start typing effect with improved parameters
-  typeWriter(typingElement, typingTexts, 40, 45, 1000)
+  typeWriter(typingElement, typingTexts, 120, 80, 2500)
 }
 
-// Contact form handling
-const contactForm = document.querySelector(".contact-form")
+// Contact method switching
+document.querySelectorAll(".method-btn").forEach((btn) => {
+  btn.addEventListener("click", function () {
+    document.querySelectorAll(".method-btn").forEach((b) => b.classList.remove("active"))
+    this.classList.add("active")
+
+    document.querySelectorAll(".contact-method").forEach((method) => method.classList.add("hidden"))
+    const methodType = this.dataset.method
+    document.getElementById(`${methodType}-method`).classList.remove("hidden")
+  })
+})
+
+// Contact form handling (Copy to Clipboard + Open Mail Client)
+const contactForm = document.querySelector("#contact-form")
 if (contactForm) {
-  contactForm.addEventListener("submit", function (e) {
+  contactForm.addEventListener("submit", async function (e) {
     e.preventDefault()
 
-    // Get form data
+    const submitBtn = this.querySelector('button[type="submit"]')
+    const originalText = submitBtn.innerHTML
+
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...'
+    submitBtn.disabled = true
+
     const formData = new FormData(this)
     const name = formData.get("name")
     const email = formData.get("email")
     const subject = formData.get("subject")
     const message = formData.get("message")
 
-    // Simple validation
     if (!name || !email || !subject || !message) {
       showNotification("Please fill in all fields", "error")
+      resetBtn()
       return
     }
 
-    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
       showNotification("Please enter a valid email address", "error")
+      resetBtn()
       return
     }
 
-    // Show success message
-    showNotification("Thank you for your message! I'll get back to you soon.", "success")
-    this.reset()
+    const emailContent = `Hi Kazi,
+
+I found your portfolio and would like to get in touch.
+
+Name: ${name}
+Email: ${email}
+Subject: ${subject}
+
+Message:
+${message}
+
+Best regards,
+${name}`
+
+    try {
+      await navigator.clipboard.writeText(emailContent)
+      window.location.href = `mailto:jihanhasan50@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailContent)}`
+      showNotification("Message copied and email client opened!", "success")
+      this.reset()
+    } catch {
+      window.location.href = `mailto:jihanhasan50@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailContent)}`
+      showNotification("Email client opened with your message!", "success")
+      this.reset()
+    } finally {
+      resetBtn()
+    }
+
+    function resetBtn() {
+      submitBtn.innerHTML = originalText
+      submitBtn.disabled = false
+    }
   })
 }
 
-// Notification system
+// Enhanced notification system
 function showNotification(message, type = "info") {
-  // Remove existing notifications
   const existingNotifications = document.querySelectorAll(".notification")
   existingNotifications.forEach((notification) => notification.remove())
 
-  // Create notification element
   const notification = document.createElement("div")
   notification.className = `notification notification-${type}`
   notification.innerHTML = `
-        <div class="notification-content">
-            <i class="fas ${type === "success" ? "fa-check-circle" : type === "error" ? "fa-exclamation-circle" : "fa-info-circle"}"></i>
-            <span>${message}</span>
-        </div>
-        <button class="notification-close">
-            <i class="fas fa-times"></i>
-        </button>
-    `
+    <div class="notification-content">
+      <i class="fas ${type === "success" ? "fa-check-circle" : type === "error" ? "fa-exclamation-circle" : "fa-info-circle"}"></i>
+      <span>${message}</span>
+    </div>
+    <button class="notification-close">
+      <i class="fas fa-times"></i>
+    </button>
+  `
 
-  // Add styles
   notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: ${type === "success" ? "rgba(34, 197, 94, 0.9)" : type === "error" ? "rgba(239, 68, 68, 0.9)" : "rgba(59, 130, 246, 0.9)"};
-        color: white;
-        padding: 1rem 1.5rem;
-        border-radius: 12px;
-        backdrop-filter: blur(10px);
-        border: 1px solid ${type === "success" ? "rgba(34, 197, 94, 0.3)" : type === "error" ? "rgba(239, 68, 68, 0.3)" : "rgba(59, 130, 246, 0.3)"};
-        z-index: 10000;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        min-width: 300px;
-        animation: slideIn 0.3s ease;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: ${type === "success" ? "rgba(34, 197, 94, 0.9)" : type === "error" ? "rgba(239, 68, 68, 0.9)" : "rgba(59, 130, 246, 0.9)"};
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    border: 1px solid ${type === "success" ? "rgba(34, 197, 94, 0.3)" : type === "error" ? "rgba(239, 68, 68, 0.3)" : "rgba(59, 130, 246, 0.3)"};
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 300px;
+    animation: slideIn 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  `
 
-  // Add animation styles
-  const style = document.createElement("style")
-  style.textContent = `
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-    `
-  document.head.appendChild(style)
-
-  // Add to document
   document.body.appendChild(notification)
 
-  // Close button functionality
   const closeBtn = notification.querySelector(".notification-close")
   closeBtn.addEventListener("click", () => {
     notification.style.animation = "slideOut 0.3s ease forwards"
     setTimeout(() => notification.remove(), 300)
   })
 
-  // Auto remove after 5 seconds
   setTimeout(() => {
     if (notification.parentNode) {
       notification.style.animation = "slideOut 0.3s ease forwards"
@@ -202,7 +221,7 @@ function showNotification(message, type = "info") {
   }, 5000)
 }
 
-// Animate elements on scroll
+// Scroll animations
 const observerOptions = {
   threshold: 0.1,
   rootMargin: "0px 0px -50px 0px",
@@ -217,7 +236,6 @@ const observer = new IntersectionObserver((entries) => {
   })
 }, observerOptions)
 
-// Observe elements for animation
 document.querySelectorAll(".project-card, .skill-item, .timeline-item, .achievement-item").forEach((el) => {
   el.style.opacity = "0"
   el.style.transform = "translateY(30px)"
@@ -225,7 +243,7 @@ document.querySelectorAll(".project-card, .skill-item, .timeline-item, .achievem
   observer.observe(el)
 })
 
-// Add active class to navigation links based on scroll position
+// Active navigation link highlighting
 window.addEventListener("scroll", () => {
   const sections = document.querySelectorAll("section[id]")
   const navLinks = document.querySelectorAll(".nav-link")
@@ -233,7 +251,6 @@ window.addEventListener("scroll", () => {
   let current = ""
   sections.forEach((section) => {
     const sectionTop = section.offsetTop
-    const sectionHeight = section.clientHeight
     if (window.scrollY >= sectionTop - 200) {
       current = section.getAttribute("id")
     }
@@ -269,102 +286,109 @@ const revealObserver = new IntersectionObserver(
       }
     })
   },
-  {
-    threshold: 0.15,
-  },
+  { threshold: 0.15 },
 )
 
 revealSections.forEach((section) => {
   revealObserver.observe(section)
 })
 
-// Add CSS for reveal animation
-const revealStyle = document.createElement("style")
-revealStyle.textContent = `
-    section {
-        opacity: 0;
-        transform: translateY(50px);
-        transition: opacity 1s ease, transform 1s ease;
+// Add CSS animations
+const style = document.createElement("style")
+style.textContent = `
+  section {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 1s ease, transform 1s ease;
+  }
+  
+  section.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .hero {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
     }
-    
-    section.revealed {
-        opacity: 1;
-        transform: translateY(0);
+    to {
+      transform: translateX(0);
+      opacity: 1;
     }
-    
-    .hero {
-        opacity: 1;
-        transform: translateY(0);
+  }
+  
+  @keyframes slideOut {
+    to {
+      transform: translateX(100%);
+      opacity: 0;
     }
-    
-    @keyframes slideOut {
-        to {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-    }
-    
-    .notification-content {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        flex: 1;
-    }
-    
-    .notification-close {
-        background: none;
-        border: none;
-        color: white;
-        cursor: pointer;
-        padding: 0.25rem;
-        border-radius: 4px;
-        transition: background 0.3s ease;
-    }
-    
-    .notification-close:hover {
-        background: rgba(255, 255, 255, 0.2);
-    }
-
-    .typing-text {
-        position: relative;
-    }
-
-    .typing-text::after {
-        content: '|';
-        color: #60a5fa;
-        animation: blink 1s infinite;
-        font-weight: 400;
-    }
-
-    @keyframes blink {
-        0%, 50% { opacity: 1; }
-        51%, 100% { opacity: 0; }
-    }
+  }
+  
+  .notification-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+  }
+  
+  .notification-close {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: background 0.3s ease;
+  }
+  
+  .notification-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  
+  .nav-link.active {
+    color: #60a5fa;
+  }
+  
+  .nav-link.active::after {
+    width: 100%;
+  }
+  
+  .contact-method.hidden {
+    display: none;
+  }
+  
+  .method-btn.active {
+    background-color: #60a5fa;
+    color: white;
+  }
 `
-document.head.appendChild(revealStyle)
+document.head.appendChild(style)
 
-// Initialize animations when page loads
+// Initialize animations on page load
 document.addEventListener("DOMContentLoaded", () => {
-  // Add initial reveal to hero section
   const heroSection = document.querySelector(".hero")
   if (heroSection) {
     heroSection.classList.add("revealed")
   }
 
-  // Stagger animation for skill items
   const skillItems = document.querySelectorAll(".skill-item")
   skillItems.forEach((item, index) => {
     item.style.animationDelay = `${index * 0.1}s`
   })
 
-  // Stagger animation for project cards
   const projectCards = document.querySelectorAll(".project-card")
   projectCards.forEach((card, index) => {
     card.style.animationDelay = `${index * 0.2}s`
   })
 })
 
-// Add hover effects for interactive elements
+// Enhanced hover effects
 document.querySelectorAll(".project-card").forEach((card) => {
   card.addEventListener("mouseenter", function () {
     this.style.transform = "translateY(-8px) scale(1.02)"
@@ -375,7 +399,7 @@ document.querySelectorAll(".project-card").forEach((card) => {
   })
 })
 
-// Add click ripple effect for buttons
+// Button ripple effect
 document.querySelectorAll(".btn").forEach((button) => {
   button.addEventListener("click", function (e) {
     const ripple = document.createElement("span")
@@ -385,17 +409,17 @@ document.querySelectorAll(".btn").forEach((button) => {
     const y = e.clientY - rect.top - size / 2
 
     ripple.style.cssText = `
-            position: absolute;
-            width: ${size}px;
-            height: ${size}px;
-            left: ${x}px;
-            top: ${y}px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            transform: scale(0);
-            animation: ripple 0.6s linear;
-            pointer-events: none;
-        `
+      position: absolute;
+      width: ${size}px;
+      height: ${size}px;
+      left: ${x}px;
+      top: ${y}px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      transform: scale(0);
+      animation: ripple 0.6s linear;
+      pointer-events: none;
+    `
 
     this.style.position = "relative"
     this.style.overflow = "hidden"
@@ -405,14 +429,21 @@ document.querySelectorAll(".btn").forEach((button) => {
   })
 })
 
+// Scroll indicator functionality
+document.querySelector(".scroll-indicator")?.addEventListener("click", () => {
+  document.querySelector("#about").scrollIntoView({
+    behavior: "smooth",
+  })
+})
+
 // Add ripple animation
 const rippleStyle = document.createElement("style")
 rippleStyle.textContent = `
-    @keyframes ripple {
-        to {
-            transform: scale(4);
-            opacity: 0;
-        }
+  @keyframes ripple {
+    to {
+      transform: scale(4);
+      opacity: 0;
     }
+  }
 `
 document.head.appendChild(rippleStyle)
