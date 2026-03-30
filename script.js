@@ -107,57 +107,81 @@ document.querySelectorAll(".method-btn").forEach((btn) => {
 // Contact form handling (Copy to Clipboard + Open Mail Client)
 const contactForm = document.querySelector("#contact-form")
 if (contactForm) {
+  // Helper to show inline status under the form
+  const formStatus = document.getElementById("form-status")
+
   contactForm.addEventListener("submit", async function (e) {
     e.preventDefault()
 
     const submitBtn = this.querySelector('button[type="submit"]')
     const originalText = submitBtn.innerHTML
 
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...'
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...'
     submitBtn.disabled = true
 
     const formData = new FormData(this)
-    const name = formData.get("name")
-    const email = formData.get("email")
-    const subject = formData.get("subject")
-    const message = formData.get("message")
+    const name = formData.get("name")?.trim()
+    const email = formData.get("email")?.trim()
+    const subject = formData.get("subject")?.trim()
+    const message = formData.get("message")?.trim()
 
     if (!name || !email || !subject || !message) {
-      showNotification("Please fill in all fields", "error")
+      const msg = "Please fill in all fields."
+      showNotification(msg, "error")
+      if (formStatus) {
+        formStatus.className = "form-status error"
+        formStatus.textContent = msg
+      }
       resetBtn()
       return
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
-      showNotification("Please enter a valid email address", "error")
+      const msg = "Please enter a valid email address."
+      showNotification(msg, "error")
+      if (formStatus) {
+        formStatus.className = "form-status error"
+        formStatus.textContent = msg
+      }
       resetBtn()
       return
     }
 
-    const emailContent = `Hi Kazi,
-
-I found your portfolio and would like to get in touch.
-
-Name: ${name}
-Email: ${email}
-Subject: ${subject}
-
-Message:
-${message}
-
-Best regards,
-${name}`
-
+    // POST to serverless endpoint (api/contact)
     try {
-      await navigator.clipboard.writeText(emailContent)
-      window.location.href = `mailto:jihanhasan50@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailContent)}`
-      showNotification("Message copied and email client opened!", "success")
-      this.reset()
-    } catch {
-      window.location.href = `mailto:jihanhasan50@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailContent)}`
-      showNotification("Email client opened with your message!", "success")
-      this.reset()
+      const resp = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, subject, message })
+      })
+
+      const result = await resp.json()
+
+      if (resp.ok && result.success) {
+        const successMsg = result.message || 'Message sent successfully — thank you!'
+        showNotification(successMsg, 'success')
+        if (formStatus) {
+          formStatus.className = 'form-status success'
+          formStatus.textContent = successMsg
+        }
+        this.reset()
+      } else {
+        const errMsg = result.error || 'Failed to send message. Please try again later.'
+        showNotification(errMsg, 'error')
+        if (formStatus) {
+          formStatus.className = 'form-status error'
+          formStatus.textContent = errMsg
+        }
+      }
+    } catch (err) {
+      console.error('Contact send error:', err)
+      const errMsg = 'Failed to send message. Please try again later.'
+      showNotification(errMsg, 'error')
+      if (formStatus) {
+        formStatus.className = 'form-status error'
+        formStatus.textContent = errMsg
+      }
     } finally {
       resetBtn()
     }

@@ -475,6 +475,24 @@ body {
   border-radius: 2px;
 }
 
+/* Justify alignment for specific content sections */
+.justify-text,
+.project-content p,
+.timeline-content p,
+.timeline-responsibilities li {
+  text-align: justify;
+  text-justify: inter-word;
+  /* disable hyphenation and avoid breaking words across lines */
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+  /* prevent mid-word breaks where possible */
+  word-break: normal;
+  overflow-wrap: normal;
+  white-space: normal;
+}
+
 /* About Section */
 .about {
   padding: 100px 0;
@@ -908,12 +926,23 @@ body {
 .skill-item i {
   font-size: 1.5rem;
   color: #60a5fa;
+  /* make the icon a centered square so the label aligns directly underneath */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: rgba(96, 165, 250, 0.06);
+  border-radius: 8px;
 }
 
 .skill-item span {
   color: #cbd5e1;
   font-size: 0.9rem;
   font-weight: 500;
+  /* ensure the text is centered under the icon */
+  text-align: center;
+  width: 100%;
 }
 
 .certification-items {
@@ -1092,6 +1121,19 @@ body {
   border-radius: 12px;
   font-size: 1rem;
   color: #ffffff;
+
+/* Inline form status message */
+.form-status {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: #cbd5e1;
+}
+.form-status.success {
+  color: rgba(34, 197, 94, 1);
+}
+.form-status.error {
+  color: rgba(239, 68, 68, 1);
+}
   transition: all 0.3s ease;
   font-family: inherit;
 }

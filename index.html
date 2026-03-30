@@ -115,10 +115,10 @@
                 <div class="about-text">
                     <div class="about-card">
                         <h3>Career Statement</h3>
-                        <p>
-                            Enthusiastic and dedicated IT graduate with a strong foundation in software development, 
-                            cybersecurity, and IT Project Management. Proficient in a variety of programming languages 
-                            including Java, C, Python, and PHP. Demonstrated success in developing innovative solutions 
+                        <p class="justify-text">
+                            Enthusiastic and dedicated IT graduate with a strong foundation in Software Engineering,
+                            Cybersecurity, and Networking. Proficient in a variety of programming languages
+                            including Java, C, Python, and PHP. Demonstrated success in developing innovative solutions
                             and maintaining efficient systems through academic projects.
                         </p>
                     </div>
@@ -129,14 +129,14 @@
                                 <h4>Master of Information and Communications Technology</h4>
                                 <span class="education-date">Nov 2024 - Present</span>
                             </div>
-                            <p class="education-institution">University of the Sunshine Coast, Adelaide, SA</p>
+                            <p class="education-institution">University of the Sunshine Coast, Adelaide, South Australia</p>
                         </div>
                         <div class="education-item">
                             <div class="education-header">
                                 <h4>B.Sc. in Computer Science and Engineering</h4>
                                 <span class="education-date">Jan 2020 - Feb 2024</span>
                             </div>
-                            <p class="education-institution">East West University, Bangladesh</p>
+                            <p class="education-institution">East West University, Dhaka, Bangladesh</p>
                         </div>
                     </div>
                 </div>
@@ -176,8 +176,26 @@
                     <div class="timeline-dot"></div>
                     <div class="timeline-content">
                         <div class="timeline-header">
-                            <h3>Logistics</h3>
-                            <span class="timeline-date">April 2025 - Present</span>
+                            <h3>Inventory Controller</h3>
+                            <span class="timeline-date">March 2026 - Present</span>
+                        </div>
+                        <p class="timeline-company">OTR Warehouse, South Australia</p>
+                        <ul class="timeline-responsibilities">
+                            <li>Investigate and resolve inventory discrepancies (e.g., shortages, overstock, damaged goods)</li>
+                            <li>Monitor and maintain accurate inventory levels using P2 program</li>
+                            <li>Perform regular stock counts, cycle counts, and full inventory audits to ensure data accuracy</li>
+                            <li>Report inventory issues and recommendations to management</li>
+                            <li>Support team members by sharing updates on inventory levels, stock discrepancies, and operational priorities</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-header">
+                            <h3>Stock Replenisher</h3>
+                            <span class="timeline-date">April 2025 - February 2026</span>
                         </div>
                         <p class="timeline-company">OTR Warehouse, South Australia</p>
                         <ul class="timeline-responsibilities">
@@ -526,6 +544,10 @@
                             <span>Firebase</span>
                         </div>
                         <div class="skill-item">
+                            <i class="fab fa-microsoft"></i>
+                            <span>Microsoft Azure</span>
+                        </div>
+                        <div class="skill-item">
                             <i class="fab fa-android"></i>
                             <span>Android Studio</span>
                         </div>
@@ -670,35 +692,8 @@
                     </div>
                 </div>
                 <div class="contact-form-container">
-                    <div class="contact-methods">
-                        <h3>Choose Your Preferred Method</h3>
-                        <div class="method-buttons">
-                            <button class="method-btn active" data-method="mailto">
-                                <i class="fas fa-envelope"></i>
-                                Email Client
-                            </button>
-                            <button class="method-btn" data-method="form">
-                                <i class="fas fa-paper-plane"></i>
-                                Contact Form
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Email Client Method -->
-                    <div class="contact-method" id="mailto-method">
-                        <div class="mailto-info">
-                            <h4>Send Email Directly</h4>
-                            <p>Click the button below to open your default email client with pre-filled information:</p>
-                            <a href="mailto:jihanhasan50@gmail.com?subject=Portfolio Contact&body=Hi Kazi,%0D%0A%0D%0AI found your portfolio and would like to get in touch.%0D%0A%0D%0AName: [Your Name]%0D%0AEmail: [Your Email]%0D%0A%0D%0AMessage:%0D%0A[Your Message]%0D%0A%0D%0ABest regards" 
-                               class="btn btn-primary mailto-btn">
-                                <i class="fas fa-envelope"></i>
-                                Open Email Client
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Contact Form Method -->
-                    <div class="contact-method hidden" id="form-method">
+                    <!-- Simplified Contact Form -->
+                    <div class="contact-method" id="form-method">
                         <form class="contact-form" id="contact-form">
                             <div class="form-group">
                                 <input type="text" id="name" name="name" placeholder="Your Name" required>
@@ -713,12 +708,13 @@
                                 <textarea id="message" name="message" placeholder="Your Message" rows="5" required></textarea>
                             </div>
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-copy"></i>
-                                Copy to Clipboard & Open Email
+                                <i class="fas fa-paper-plane"></i>
+                                Send Message
                             </button>
+                            <div id="form-status" class="form-status" aria-live="polite"></div>
                             <p class="form-note">
                                 <i class="fas fa-info-circle"></i>
-                                This will copy your message and open your email client
+                                We'll reply as soon as possible. Your message is sent securely.
                             </p>
                         </form>
                     </div>
@@ -750,6 +746,5 @@
     </footer>
 
     <script src="script.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </body>
 </html>
