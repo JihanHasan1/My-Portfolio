@@ -1248,6 +1248,81 @@ body {
   font-size: 1.1rem;
 }
 
+/* Contact Direct Actions */
+.contact-direct {
+  text-align: center;
+}
+
+.contact-direct h3 {
+  color: #ffffff;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.contact-direct p {
+  color: #cbd5e1;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.contact-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.contact-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.contact-action-btn:hover {
+  background: rgba(96, 165, 250, 0.1);
+  border-color: rgba(96, 165, 250, 0.3);
+  color: #60a5fa;
+  transform: translateY(-2px);
+}
+
+.contact-action-btn:active {
+  transform: translateY(0);
+}
+
+.contact-action-btn i {
+  font-size: 1.2rem;
+}
+
+.copy-status {
+  min-height: 24px;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.copy-status.success {
+  color: #10b981;
+  opacity: 1;
+}
+
+.copy-status.error {
+  color: #ef4444;
+  opacity: 1;
+}
+
 .form-note {
   color: #94a3b8;
   font-size: 0.9rem;

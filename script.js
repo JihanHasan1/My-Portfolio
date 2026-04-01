@@ -104,19 +104,19 @@ document.querySelectorAll(".method-btn").forEach((btn) => {
   })
 })
 
-// Contact form handling (Copy to Clipboard + Open Mail Client)
+// Contact form handling with mailto fallback
 const contactForm = document.querySelector("#contact-form")
 if (contactForm) {
   // Helper to show inline status under the form
   const formStatus = document.getElementById("form-status")
 
-  contactForm.addEventListener("submit", async function (e) {
+  contactForm.addEventListener("submit", function (e) {
     e.preventDefault()
 
     const submitBtn = this.querySelector('button[type="submit"]')
     const originalText = submitBtn.innerHTML
 
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...'
+    submitBtn.innerHTML = '<i class="fas fa-envelope"></i> Opening Email...'
     submitBtn.disabled = true
 
     const formData = new FormData(this)
@@ -148,41 +148,46 @@ if (contactForm) {
       return
     }
 
-    // POST to serverless endpoint (api/contact)
     try {
-      const resp = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, subject, message })
-      })
+      // Create mailto link with form data
+      const recipient = 'kazi.jihan12@gmail.com'
+      const emailSubject = encodeURIComponent(`[Portfolio Contact] ${subject}`)
+      const emailBody = encodeURIComponent(
+        `Hello,\n\nYou received a new message from your portfolio contact form.\n\n` +
+        `Name: ${name}\n` +
+        `Email: ${email}\n` +
+        `Subject: ${subject}\n\n` +
+        `Message:\n${message}\n\n` +
+        `---\nSent from your portfolio website`
+      )
 
-      const result = await resp.json()
+      const mailtoLink = `mailto:${recipient}?subject=${emailSubject}&body=${emailBody}`
 
-      if (resp.ok && result.success) {
-        const successMsg = result.message || 'Message sent successfully — thank you!'
-        showNotification(successMsg, 'success')
-        if (formStatus) {
-          formStatus.className = 'form-status success'
-          formStatus.textContent = successMsg
-        }
-        this.reset()
-      } else {
-        const errMsg = result.error || 'Failed to send message. Please try again later.'
-        showNotification(errMsg, 'error')
-        if (formStatus) {
-          formStatus.className = 'form-status error'
-          formStatus.textContent = errMsg
-        }
+      // Open email client
+      window.location.href = mailtoLink
+
+      // Show success message
+      const successMsg = 'Email client opened with your message. Please send the email to complete your message.'
+      showNotification(successMsg, 'success')
+      if (formStatus) {
+        formStatus.className = 'form-status success'
+        formStatus.textContent = successMsg
       }
+
+      // Reset form after a short delay
+      setTimeout(() => {
+        this.reset()
+        resetBtn()
+      }, 2000)
+
     } catch (err) {
-      console.error('Contact send error:', err)
-      const errMsg = 'Failed to send message. Please try again later.'
+      console.error('Contact form error:', err)
+      const errMsg = 'Failed to open email client. Please try again.'
       showNotification(errMsg, 'error')
       if (formStatus) {
         formStatus.className = 'form-status error'
         formStatus.textContent = errMsg
       }
-    } finally {
       resetBtn()
     }
 
